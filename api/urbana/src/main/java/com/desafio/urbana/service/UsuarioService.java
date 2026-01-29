@@ -58,36 +58,72 @@ public class UsuarioService {
 
     private void validateCreate(UsuarioCreateRequest dto) {
 
-        List<String> errors = new ArrayList<>();
-
         if (dto == null) {
             throw new ValidationException(List.of("corpo da requisição é obrigatório"));
         }
 
-        if (dto.getNome() == null || dto.getNome().trim().isEmpty()) {
-            errors.add("nome é obrigatorio");
-        }
+        List<String> errors = new ArrayList<>();
 
-        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
-            errors.add("email é obrigatorio");
-        } else {
-            String email = dto.getEmail().trim();
-
-            final Boolean EMAIL_IS_VALID = !email.contains("@") || email.startsWith("@") || email.endsWith("@");
-
-            if (EMAIL_IS_VALID) {
-                errors.add("email está em um formato inválido");
-            }
-        }
-
-        if (dto.getSenha() == null || dto.getSenha().trim().isEmpty()) {
-            errors.add("senha é obrigatorio");
-        } else if (dto.getSenha().length() < 6) {
-            errors.add("a senha deve ter mais de  6 caracteres");
-        }
+        validateNome(dto.getNome(), errors);
+        validateEmail(dto.getEmail(), errors);
+        validateSenha(dto.getSenha(), errors);
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
     }
+
+
+    private void validateNome(String nome, List<String> errors) {
+
+        boolean NAME_IS_EMPTY = nome == null || nome.trim().isEmpty();
+
+        if (NAME_IS_EMPTY) {
+            errors.add("nome é obrigatório");
+        }
+    }
+
+    private void validateEmail(String email, List<String> errors) {
+
+        boolean EMAIL_IS_EMPTY = email == null || email.trim().isEmpty();
+
+        if (EMAIL_IS_EMPTY) {
+            errors.add("email é obrigatório");
+            return;
+        }
+
+        String normalizedEmail = email.trim();
+
+        boolean EMAIL_HAS_NO_AT = !normalizedEmail.contains("@");
+        boolean EMAIL_STARTS_WITH_AT = normalizedEmail.startsWith("@");
+        boolean EMAIL_ENDS_WITH_AT = normalizedEmail.endsWith("@");
+
+        boolean EMAIL_IS_INVALID =
+                EMAIL_HAS_NO_AT ||
+                        EMAIL_STARTS_WITH_AT ||
+                        EMAIL_ENDS_WITH_AT;
+
+        if (EMAIL_IS_INVALID) {
+            errors.add("email está em um formato inválido");
+        }
+    }
+
+    private void validateSenha(String senha, List<String> errors) {
+
+        boolean PASSWORD_IS_EMPTY = senha == null || senha.trim().isEmpty();
+
+        if (PASSWORD_IS_EMPTY) {
+            errors.add("senha é obrigatória");
+            return;
+        }
+
+        boolean PASSWORD_TOO_SHORT = senha.length() < 6;
+
+        if (PASSWORD_TOO_SHORT) {
+            errors.add("a senha deve ter no mínimo 6 caracteres");
+        }
+    }
+
+
+
 }
