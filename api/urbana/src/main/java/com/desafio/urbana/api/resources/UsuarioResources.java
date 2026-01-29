@@ -1,12 +1,13 @@
 package com.desafio.urbana.api.resources;
 
+import com.desafio.urbana.api.dto.UsuarioCreateRequest;
 import com.desafio.urbana.api.dto.UsuarioResponse;
 import com.desafio.urbana.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,4 +29,21 @@ public class UsuarioResources {
         return ResponseEntity.ok().body(usuarioResponseList);
 
     }
+
+
+    @PostMapping
+    public ResponseEntity<UsuarioResponse> insert(
+            @RequestBody UsuarioCreateRequest request) {
+
+        UsuarioResponse response = usuarioService.insert(request);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(response);
+    }
+
 }
