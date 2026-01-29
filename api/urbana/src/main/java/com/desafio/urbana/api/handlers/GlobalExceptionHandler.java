@@ -1,6 +1,7 @@
 package com.desafio.urbana.api.handlers;
 
 import com.desafio.urbana.api.exceptions.EmailAlreadyExistsException;
+import com.desafio.urbana.api.exceptions.ResourceNotFoundException;
 import com.desafio.urbana.api.exceptions.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -45,4 +46,23 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFound(
+            ResourceNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        ApiError body = new ApiError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "RESOURCE_NOT_FOUND",
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
 }

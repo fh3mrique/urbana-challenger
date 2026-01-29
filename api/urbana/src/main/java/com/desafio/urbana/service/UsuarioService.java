@@ -3,6 +3,7 @@ package com.desafio.urbana.service;
 import com.desafio.urbana.api.dto.UsuarioCreateRequest;
 import com.desafio.urbana.api.dto.UsuarioResponse;
 import com.desafio.urbana.api.exceptions.EmailAlreadyExistsException;
+import com.desafio.urbana.api.exceptions.ResourceNotFoundException;
 import com.desafio.urbana.api.exceptions.ValidationException;
 import com.desafio.urbana.api.mapper.UsuarioMapper;
 import com.desafio.urbana.domain.entities.Usuario;
@@ -54,6 +55,29 @@ public class UsuarioService {
 
         return UsuarioMapper.toResponse(entity);
     }
+
+
+    @Transactional
+    public UsuarioResponse update(Long id, UsuarioCreateRequest dto) {
+
+        validateCreate(dto);
+
+        Usuario entity = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("usuário não encontrado: " + id));
+
+        String normalizedEmail = dto.getEmail().trim().toLowerCase();
+
+        validateEmailUniquenessForUpdate(normalizedEmail, entity);
+
+        entity.setNome(dto.getNome().trim());
+        entity.setEmail(normalizedEmail);
+        entity.setSenha(passwordEncoder.encode(dto.getSenha()));
+
+        entity = usuarioRepository.save(entity);
+
+        return UsuarioMapper.toResponse(entity);
+    }
+
 
 
     private void validateCreate(UsuarioCreateRequest dto) {
@@ -123,6 +147,23 @@ public class UsuarioService {
             errors.add("a senha deve ter no mínimo 6 caracteres");
         }
     }
+
+
+    private void validateEmailUniquenessForUpdate(String email, Usuario currentUser) {
+
+        usuarioRepository.findByEmail(email)
+                .ifPresent(existing -> {
+
+                    boolean EMAIL_BELONGS_TO_ANOTHER_USER =
+                            !existing.getId().equals(currentUser.getId());
+
+                    if (EMAIL_BELONGS_TO_ANOTHER_USER) {
+                        throw new EmailAlreadyExistsException(email);
+                    }
+                });
+    }
+
+
 
 
 
