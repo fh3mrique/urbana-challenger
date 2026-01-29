@@ -79,6 +79,19 @@ public class UsuarioService {
     }
 
 
+    @Transactional
+    public void delete(Long id) {
+
+        boolean USER_DOES_NOT_EXIST = !usuarioRepository.existsById(id);
+
+        if (USER_DOES_NOT_EXIST) {
+            throw new ResourceNotFoundException("usuário não encontrado: " + id);
+        }
+
+        usuarioRepository.deleteById(id);
+    }
+
+
 
     private void validateCreate(UsuarioCreateRequest dto) {
 
