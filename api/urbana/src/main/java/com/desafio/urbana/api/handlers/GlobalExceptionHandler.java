@@ -1,5 +1,6 @@
 package com.desafio.urbana.api.handlers;
 
+import com.desafio.urbana.api.exceptions.BusinessException;
 import com.desafio.urbana.api.exceptions.EmailAlreadyExistsException;
 import com.desafio.urbana.api.exceptions.ResourceNotFoundException;
 import com.desafio.urbana.api.exceptions.ValidationException;
@@ -63,6 +64,25 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiError> handleBusinessException(BusinessException ex, HttpServletRequest request) {
+
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        ApiError body = new ApiError(
+                Instant.now(),
+                status.value(),
+                "Business rule violation",
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+
+        return ResponseEntity.status(status).body(body);
     }
 
 }
