@@ -2,6 +2,9 @@ package com.desafio.urbana.domain.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "tb_users")
 public class Usuario {
@@ -12,6 +15,13 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
+
+    @OneToMany(
+            mappedBy = "usuario",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Cartao> cartoes = new HashSet<>();
 
     public Usuario(Long id, String nome, String senha, String email) {
         this.id = id;
@@ -55,4 +65,10 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public Set<Cartao> getCartoes() {
+        return cartoes;
+    }
+
+
 }
