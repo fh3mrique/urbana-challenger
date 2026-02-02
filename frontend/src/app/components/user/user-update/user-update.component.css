@@ -1,0 +1,47 @@
+.full-width {
+    width: 100%;
+}
+
+form {
+    padding: 20px;
+}
+
+table{
+    margin-bottom: 30px;
+}
+
+.row-inputs {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.row-inputs p {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.row-inputs p:first-child {
+    margin-left: 0;
+}
+
+.row-inputs p:last-child {
+    margin-right: 0;
+}
+
+.half-width {
+    width: 100%;
+    flex: 1;
+}
+
+.update-user-title{
+    font-size: 30px;
+}
+
+.form-user-update-btn-container{
+    display: flex;
+    /* justify-content:space-around; */
+    column-gap: 40px;
+    align-items: end;
+    justify-content: end;
+}

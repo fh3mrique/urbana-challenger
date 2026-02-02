@@ -110,6 +110,14 @@ public class UsuarioService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public UsuarioResponse findById(Long id) {
+        Usuario entity = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("usuário não encontrado: " + id));
+
+        return UsuarioMapper.toResponse(entity);
+    }
+
 
     private void validateNome(String nome, List<String> errors) {
 

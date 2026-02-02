@@ -1,0 +1,58 @@
+<div class="form-user-insert-container mat-elevation-z8">
+  <form (ngSubmit)="update()">
+    <h1 class="update-user-title">Atualizar usuário</h1>
+
+    <p>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Nome</mat-label>
+        <input
+          [(ngModel)]="user.nome"
+          name="nome"
+          [formControl]="nome"
+          required
+          matInput
+          maxlength="50"
+        />
+        <mat-icon matSuffix>user</mat-icon>
+      </mat-form-field>
+    </p>
+
+    <div class="row-inputs">
+      <p>
+        <mat-form-field class="half-width" appearance="fill">
+          <mat-label>Email</mat-label>
+          <input
+            [(ngModel)]="user.email"
+            name="email"
+            [formControl]="email"
+            required
+            matInput
+          />
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field class="half-width" appearance="fill">
+          <mat-label>Senha</mat-label>
+          <input
+            [(ngModel)]="user.senha"
+            name="senha"
+            [formControl]="senha"
+            required
+            type="password"
+            matInput
+          />
+          <mat-icon matSuffix>lock</mat-icon>
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="form-user-update-btn-container">
+      <button type="submit" [disabled]="validateFields()" mat-flat-button color="primary">
+        Atualizar
+      </button>
+      <button routerLink="../../" mat-stroked-button color="warn">Cancelar</button>
+    </div>
+  </form>
+</div>

@@ -3,20 +3,27 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
-
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ComponentsModule } from './components/components.module';
+import { HttpClient } from '@angular/common/http';
+import { AngularMaterialModule } from './angular-material.module';
+import { HttpClientModule } from '@angular/common/http';  // Import HttpClientModule
+/* import { UsersListComponent } from './components/users-list/users-list.component'; */
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule
+    AppRoutingModule, 
+    ComponentsModule,
+    AngularMaterialModule, 
+    HttpClientModule,
+    
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -20,6 +20,11 @@ public class UsuarioResources {
         this.usuarioService = usuarioService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponse> findById(@PathVariable Long id) {
+        UsuarioResponse response = usuarioService.findById(id);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> findAll() {

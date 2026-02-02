@@ -1,0 +1,54 @@
+<div class="form-user-insert-container mat-elevation-z8">
+    <form action="">
+        <h2>Cadastrar usuário</h2>
+
+        <p>
+            <mat-form-field appearance="fill">
+                <mat-label>Nome</mat-label>
+                <input
+                [(ngModel)]="user.nome"
+                name="nome"
+                [formControl]="nome"
+                required 
+                matInput 
+                placeholder="Placeholder"
+                maxlength="50"
+                >
+                
+                <mat-icon matSuffix>user</mat-icon>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="fill">
+                <mat-label>Email</mat-label>
+                <input
+                [(ngModel)]="user.email"
+                name="email"
+                [formControl]="email"
+                required 
+                matInput 
+                placeholder="Placeholder">
+                <mat-icon matSuffix>email</mat-icon>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="fill">
+                <mat-label>Senha</mat-label>
+                <input
+                [(ngModel)]="user.senha"
+                name="senha"
+                [formControl]="senha"
+                required 
+                type="password" 
+                matInput 
+                placeholder="Placeholder">
+                <mat-icon matSuffix>password</mat-icon>
+            </mat-form-field>
+        </p>
+
+        <button (click)="create()" [disabled]="validateFields()" mat-flat-button color="primary">Cadastra</button>
+        <button routerLink="../" mat-stroked-button color="warm">cancelar</button>
+    </form>
+</div>
