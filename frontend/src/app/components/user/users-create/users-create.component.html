@@ -1,6 +1,6 @@
 <div class="form-user-insert-container mat-elevation-z8">
   <form novalidate>
-    <h2>Cadastrar usuário</h2>
+    <h2>Cadastrar usuÃ¡rio</h2>
 
     <p>
       <mat-form-field appearance="fill">
@@ -8,16 +8,16 @@
         <input
           matInput
           [formControl]="nome"
-          placeholder="Nome do usuário"
+          placeholder="Nome do usuÃ¡rio"
           maxlength="50"
         />
         <mat-icon matSuffix>person</mat-icon>
 
         <mat-error *ngIf="nome.hasError('required')">
-          Nome é obrigatório
+          Nome Ã© obrigatÃ³rio
         </mat-error>
         <mat-error *ngIf="nome.hasError('minlength')">
-          Nome deve ter no mínimo 3 caracteres
+          Nome deve ter no mÃ­nimo 3 caracteres
         </mat-error>
       </mat-form-field>
     </p>
@@ -29,15 +29,15 @@
           matInput
           type="email"
           [formControl]="email"
-          placeholder="Email do usuário"
+          placeholder="Email do usuÃ¡rio"
         />
         <mat-icon matSuffix>email</mat-icon>
 
         <mat-error *ngIf="email.hasError('required')">
-          Email é obrigatório
+          Email Ã© obrigatÃ³rio
         </mat-error>
         <mat-error *ngIf="email.hasError('email')">
-          Email inválido
+          Email invÃ¡lido
         </mat-error>
       </mat-form-field>
     </p>
@@ -54,10 +54,10 @@
         <mat-icon matSuffix>lock</mat-icon>
 
         <mat-error *ngIf="senha.hasError('required')">
-          Senha é obrigatória
+          Senha Ã© obrigatÃ³ria
         </mat-error>
         <mat-error *ngIf="senha.hasError('minlength')">
-          Senha deve ter no mínimo 3 caracteres
+          Senha deve ter no mÃ­nimo 3 caracteres
         </mat-error>
       </mat-form-field>
     </p>

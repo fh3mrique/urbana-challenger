@@ -15,10 +15,19 @@ export class UserCardsComponent implements OnInit {
 
   tipos: TipoCartao[] = ['COMUM', 'ESTUDANTE', 'TRABALHADOR'];
 
-  tipoCartao = new FormControl<TipoCartao | null>(null, { nonNullable: false, validators: [Validators.required] });
-  numeroCartao = new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] });
+  tipoCartao = new FormControl<TipoCartao | null>(null, {
+    nonNullable: false,
+    validators: [Validators.required],
+  });
 
-  displayedColumns: string[] = ['tipoCartao', 'numeroCartao', 'status'];
+  numeroCartao = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(6)],
+  });
+
+  displayedColumns: string[] = ['tipoCartao', 'numeroCartao', 'status', 'acoes'];
+
+  private updatingIds = new Set<number>();
 
   constructor(
     private readonly _route: ActivatedRoute,
@@ -57,7 +66,6 @@ export class UserCardsComponent implements OnInit {
     const tipo = this.tipoCartao.value;
     const numeroStr = this.numeroCartao.value;
 
-    // Com input filtrado, aqui é só garantir que existe
     if (!tipo || !numeroStr) {
       this._snackBar.open('Preencha tipo e número do cartão.', 'Fechar');
       return;
@@ -79,7 +87,36 @@ export class UserCardsComponent implements OnInit {
       });
   }
 
+  onToggleStatus(card: ICard, newStatus: boolean): void {
+    if (this.isUpdating(card.id)) return;
+
+    const previous = card.status;
+
+    card.status = newStatus;
+    this.updatingIds.add(card.id);
+
+    this._cardService.updateStatus(this.userId, card.id, newStatus).subscribe({
+      next: (updated) => {
+        this.cards = this.cards.map(c => (c.id === updated.id ? updated : c));
+        this._snackBar.open('Status atualizado.', 'Fechar');
+        this.updatingIds.delete(card.id);
+      },
+      error: (err) => {
+        console.log(err);
+        card.status = previous;
+        this.updatingIds.delete(card.id);
+
+        const msg = err?.error?.message ?? 'Erro ao atualizar status do cartão.';
+        this._snackBar.open(msg, 'Fechar');
+      },
+    });
+  }
+
+  isUpdating(cardId: number): boolean {
+    return this.updatingIds.has(cardId);
+  }
+
   trackByCardId(_: number, c: ICard) {
-    return (c as any).id ?? c.numeroCartao; 
+    return c.id ?? c.numeroCartao;
   }
 }

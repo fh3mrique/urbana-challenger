@@ -10,6 +10,10 @@ export interface AddCardRequest {
   tipoCartao: TipoCartao;
 }
 
+export interface UpdateCardStatusRequest {
+  status: boolean;
+}
+
 export interface ICard {
   id: number;
   numeroCartao: number;
@@ -19,7 +23,6 @@ export interface ICard {
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
-  // seu backend está em /usuarios (sem /api)
   private readonly baseUrl = `${API_CONFIG.baseUrl}/usuarios`;
 
   constructor(private readonly http: HttpClient) {}
@@ -30,5 +33,10 @@ export class CardService {
 
   addToUser(userId: number, payload: AddCardRequest): Observable<ICard> {
     return this.http.post<ICard>(`${this.baseUrl}/${userId}/cartoes`, payload);
+  }
+
+  updateStatus(userId: number, cartaoId: number, status: boolean): Observable<ICard> {
+    const payload: UpdateCardStatusRequest = { status };
+    return this.http.patch<ICard>(`${this.baseUrl}/${userId}/cartoes/${cartaoId}/status`, payload);
   }
 }

@@ -12,6 +12,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { NgModule } from '@angular/core';
 
 @NgModule(
@@ -21,7 +24,7 @@ import { NgModule } from '@angular/core';
         MatCheckboxModule, MatButtonModule, MatSidenavModule,MatSelectModule, MatRadioModule, MatListModule],
 
       exports: [MatCardModule, MatFormFieldModule, MatInputModule, 
-      MatTableModule, MatSnackBarModule, MatIconModule,MatToolbarModule, MatTableModule,
+      MatTableModule, MatSnackBarModule, MatIconModule,MatToolbarModule, MatSlideToggleModule, MatProgressSpinnerModule,
       MatCheckboxModule, MatButtonModule, MatSidenavModule,MatSelectModule, MatRadioModule, MatListModule],
     }
   )
