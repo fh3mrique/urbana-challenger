@@ -11,10 +11,10 @@
     <mat-form-field appearance="fill">
       <mat-label>Tipo do cartão</mat-label>
       <mat-select [formControl]="tipoCartao">
-        <mat-option *ngFor="let t of tipos" [value]="t.value">
-          {{ t.label }}
-        </mat-option>
-      </mat-select>
+  <mat-option *ngFor="let t of tipos" [value]="t">
+    {{ t | tipoCartaoLabel }}
+  </mat-option>
+</mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -37,7 +37,7 @@
     </ng-container>
 
     <ng-container matColumnDef="numeroCartao">
-      <th mat-header-cell *matHeaderCellDef>Número</th>
+      <th mat-header-cell *matHeaderCellDef>Numero</th>
       <td mat-cell *matCellDef="let c">{{ c.numeroCartao }}</td>
     </ng-container>
 

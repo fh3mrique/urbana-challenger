@@ -30,19 +30,19 @@ export class UserUpdateComponent implements OnInit {
   senha = new FormControl('', [Validators.required, Validators.minLength(3)]);
 
   constructor(
-    private readonly userService: UserService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private readonly _userService: UserService,
+    private readonly _router: Router,
+    private readonly _route: ActivatedRoute,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this._route.snapshot.paramMap.get('id');
     const id = Number(idParam);
 
     if (!idParam || Number.isNaN(id)) {
-      this.snackBar.open('Id inválido na rota.', 'Fechar');
-      this.router.navigate(['users']);
+      this._snackBar.open('Id inválido na rota.', 'Fechar');
+      this._router.navigate(['users']);
       return;
     }
 
@@ -55,24 +55,21 @@ export class UserUpdateComponent implements OnInit {
   }
 
   findById(id: number): void {
-    this.userService.findById(id).subscribe({
+    this._userService.findById(id).subscribe({
       next: (response: any) => {
-        // se o backend retornar nome/senha, ok. Se retornar sem senha, você decide.
         this.user.nome = response.nome ?? '';
         this.user.email = response.email ?? '';
-        // senha pode não vir do backend por segurança; deixe vazia e obrigue o usuário a digitar
         this.user.senha = '';
       },
       error: (err) => {
         console.log(err);
-        this.snackBar.open('Erro ao carregar usuário.', 'Fechar');
-        this.router.navigate(['users']);
+        this._snackBar.open('Erro ao carregar usuário.', 'Fechar');
+        this._router.navigate(['users']);
       }
     });
   }
 
   update(): void {
-    // garante que o ID do body é o mesmo da URL
     const payload: IUserUpdate = {
       id: this.user.id,
       nome: this.user.nome,
@@ -80,14 +77,14 @@ export class UserUpdateComponent implements OnInit {
       senha: this.user.senha
     };
 
-    this.userService.update(this.user.id, payload).subscribe({
+    this._userService.update(this.user.id, payload).subscribe({
       next: () => {
-        this.snackBar.open('Usuário atualizado com sucesso.', 'Fechar');
-        this.router.navigate(['users']);
+        this._snackBar.open('Usuário atualizado com sucesso.', 'Fechar');
+        this._router.navigate(['users']);
       },
       error: (err) => {
         console.log(err);
-        this.snackBar.open('Erro ao atualizar usuário.', 'Fechar');
+        this._snackBar.open('Erro ao atualizar usuário.', 'Fechar');
       }
     });
   }

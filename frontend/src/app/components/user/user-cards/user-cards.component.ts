@@ -7,38 +7,33 @@ import { CardService, ICard, TipoCartao } from '../../../services/card.service';
 @Component({
   selector: 'app-user-cards',
   templateUrl: './user-cards.component.html',
-  styleUrl: './user-cards.component.css'
+  styleUrl: './user-cards.component.css',
 })
 export class UserCardsComponent implements OnInit {
-
   userId = 0;
   cards: ICard[] = [];
 
-  tipos: { value: TipoCartao; label: string }[] = [
-    { value: 'COMUM', label: 'Comum' },
-    { value: 'ESTUDANTE', label: 'Estudante' },
-    { value: 'TRABALHADOR', label: 'Trabalhador' },
-  ];
+  tipos: TipoCartao[] = ['COMUM', 'ESTUDANTE', 'TRABALHADOR'];
 
-  tipoCartao = new FormControl<TipoCartao | null>(null, [Validators.required]);
-  numeroCartao = new FormControl<string>('', [Validators.required, Validators.minLength(6)]);
+  tipoCartao = new FormControl<TipoCartao | null>(null, { nonNullable: false, validators: [Validators.required] });
+  numeroCartao = new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] });
 
   displayedColumns: string[] = ['tipoCartao', 'numeroCartao', 'status'];
 
   constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly cardService: CardService,
-    private snackBar: MatSnackBar
+    private readonly _route: ActivatedRoute,
+    private readonly _router: Router,
+    private readonly _cardService: CardService,
+    private readonly _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this._route.snapshot.paramMap.get('id');
     const id = Number(idParam);
 
     if (!idParam || Number.isNaN(id)) {
-      this.snackBar.open('Id inválido na rota.', 'Fechar');
-      this.router.navigate(['users']);
+      this._snackBar.open('Id inválido na rota.', 'Fechar');
+      this._router.navigate(['users']);
       return;
     }
 
@@ -47,39 +42,44 @@ export class UserCardsComponent implements OnInit {
   }
 
   loadCards(): void {
-    this.cardService.findAllByUser(this.userId).subscribe({
-      next: (list) => this.cards = list,
+    this._cardService.findAllByUser(this.userId).subscribe({
+      next: (list) => (this.cards = list),
       error: (err) => {
         console.log(err);
-        this.snackBar.open('Erro ao carregar cartões.', 'Fechar');
-      }
+        this._snackBar.open('Erro ao carregar cartões.', 'Fechar');
+      },
     });
   }
 
   addCard(): void {
+    if (this.tipoCartao.invalid || this.numeroCartao.invalid) return;
+
     const tipo = this.tipoCartao.value;
-    const numero = Number(this.numeroCartao.value);
+    const numeroStr = this.numeroCartao.value;
 
-    if (!tipo) {
-      this.snackBar.open('Tipo do cartão é obrigatório.', 'Fechar');
-      return;
-    }
-    if (Number.isNaN(numero)) {
-      this.snackBar.open('Número do cartão inválido.', 'Fechar');
+    // Com input filtrado, aqui é só garantir que existe
+    if (!tipo || !numeroStr) {
+      this._snackBar.open('Preencha tipo e número do cartão.', 'Fechar');
       return;
     }
 
-    this.cardService.addToUser(this.userId, { tipoCartao: tipo, numeroCartao: numero }).subscribe({
-      next: (created) => {
-        this.snackBar.open('Cartão adicionado com sucesso.', 'Fechar');
-        this.cards = [created, ...this.cards];
-        this.tipoCartao.reset(null);
-        this.numeroCartao.reset('');
-      },
-      error: (err) => {
-        console.log(err);
-        this.snackBar.open('Erro ao adicionar cartão.', 'Fechar');
-      }
-    });
+    this._cardService
+      .addToUser(this.userId, { tipoCartao: tipo, numeroCartao: Number(numeroStr) })
+      .subscribe({
+        next: (created) => {
+          this._snackBar.open('Cartão adicionado com sucesso.', 'Fechar');
+          this.cards = [created, ...this.cards];
+          this.tipoCartao.reset(null);
+          this.numeroCartao.setValue('');
+        },
+        error: (err) => {
+          console.log(err);
+          this._snackBar.open('Erro ao adicionar cartão.', 'Fechar');
+        },
+      });
+  }
+
+  trackByCardId(_: number, c: ICard) {
+    return (c as any).id ?? c.numeroCartao; 
   }
 }

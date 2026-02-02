@@ -3,6 +3,7 @@ package com.desafio.urbana.api.resources;
 
 import com.desafio.urbana.api.dto.AddCartaoRequest;
 import com.desafio.urbana.api.dto.CartaoResponse;
+import com.desafio.urbana.api.dto.UpdateCartaoStatusRequest;
 import com.desafio.urbana.service.CartaoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,16 @@ public class CartaoResources {
     @GetMapping("/{userId}/cartoes")
     public ResponseEntity<List<CartaoResponse>> findAllByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(cartaoService.findAllByUser(userId));
+    }
+
+
+    @PatchMapping("/{userId}/cartoes/{cartaoId}/status")
+    public ResponseEntity<CartaoResponse> updateCardStatus(
+            @PathVariable Long userId,
+            @PathVariable Long cartaoId,
+            @RequestBody UpdateCartaoStatusRequest request
+    ) {
+        CartaoResponse updated = cartaoService.updateCardStatus(userId, cartaoId, request);
+        return ResponseEntity.ok(updated);
     }
 }

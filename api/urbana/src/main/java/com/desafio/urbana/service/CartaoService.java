@@ -2,6 +2,7 @@ package com.desafio.urbana.service;
 
 import com.desafio.urbana.api.dto.AddCartaoRequest;
 import com.desafio.urbana.api.dto.CartaoResponse;
+import com.desafio.urbana.api.dto.UpdateCartaoStatusRequest;
 import com.desafio.urbana.api.exceptions.BusinessException;
 import com.desafio.urbana.api.exceptions.ResourceNotFoundException;
 import com.desafio.urbana.api.mapper.CartaoMapper;
@@ -39,7 +40,7 @@ public class CartaoService {
 
         Cartao entity = CartaoMapper.toEntity(request, user);
 
-        entity = cartaoRepository.save(entity);
+        cartaoRepository.save(entity);
 
         return CartaoMapper.toResponse(entity);
     }
@@ -47,7 +48,7 @@ public class CartaoService {
     @Transactional
     public List<CartaoResponse> findAllByUser(Long userId) {
 
-        ensureUserExists(userId);
+        findUserOrThrow(userId);
 
         return cartaoRepository.findAllByUsuarioIdOrderByTipoCartaoAsc(userId)
                 .stream()
@@ -55,11 +56,39 @@ public class CartaoService {
                 .toList();
     }
 
+    @Transactional
+    public CartaoResponse updateCardStatus(Long userId,
+                                           Long cartaoId,
+                                           UpdateCartaoStatusRequest request) {
+
+        validateUpdateStatus(request);
+
+        findUserOrThrow(userId);
+
+        Cartao entity = cartaoRepository.findByIdAndUsuarioId(cartaoId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Cartão não encontrado: " + cartaoId + " para o usuário: " + userId
+                ));
+
+        Boolean novoStatus = request.getStatus();
+
+        boolean STATUS_IS_ALREADY_THE_SAME = novoStatus.equals(entity.getStatus());
+        if (STATUS_IS_ALREADY_THE_SAME) {
+            throw new BusinessException(
+                    "O cartão já está " + (novoStatus ? "ativo" : "inativo")
+            );
+        }
+
+        entity.setStatus(novoStatus);
+
+        cartaoRepository.save(entity);
+
+        return CartaoMapper.toResponse(entity);
+    }
+
     private void validateCreate(AddCartaoRequest request) {
 
-        if (request == null) {
-            throw new BusinessException("corpo da requisição é obrigatório");
-        }
+        validateRequestBody(request);
 
         List<String> errors = new ArrayList<>();
 
@@ -71,50 +100,49 @@ public class CartaoService {
         }
     }
 
+    private void validateUpdateStatus(UpdateCartaoStatusRequest request) {
+
+        validateRequestBody(request);
+
+        if (request.getStatus() == null) {
+            throw new BusinessException("status é obrigatório");
+        }
+    }
+
+    private void validateRequestBody(Object request) {
+        if (request == null) {
+            throw new BusinessException("corpo da requisição é obrigatório");
+        }
+    }
+
     private void validateNumeroCartao(Long numeroCartao, List<String> errors) {
-
-        boolean CARD_NUMBER_IS_EMPTY = numeroCartao == null;
-
-        if (CARD_NUMBER_IS_EMPTY) {
+        if (numeroCartao == null) {
             errors.add("numeroCartao é obrigatório");
         }
     }
 
-    private void validateTipoCartao(Object tipoCartao, List<String> errors) {
-        boolean CARD_TYPE_IS_NULL = tipoCartao == null;
-
-        if (CARD_TYPE_IS_NULL) {
+    private void validateTipoCartao(TipoCartao tipoCartao, List<String> errors) {
+        if (tipoCartao == null) {
             errors.add("tipoCartao é obrigatório");
         }
     }
 
     private Usuario findUserOrThrow(Long userId) {
         return usuarioRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado " + userId));
-    }
-
-    private void ensureUserExists(Long userId) {
-
-        boolean USER_DOES_NOT_EXIST = !usuarioRepository.existsById(userId);
-
-        if (USER_DOES_NOT_EXIST) {
-            throw new ResourceNotFoundException("Usuário não encontrado: " + userId);
-        }
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Usuário não encontrado: " + userId
+                ));
     }
 
     private void validateNumeroCartaoUnique(Long numeroCartao) {
-
-        boolean CARD_NUMBER_ALREADY_EXISTS = cartaoRepository.existsByNumeroCartao(numeroCartao);
-
-        if (CARD_NUMBER_ALREADY_EXISTS) {
+        if (cartaoRepository.existsByNumeroCartao(numeroCartao)) {
             throw new BusinessException("Já existe um cartão com esse número");
         }
     }
 
     private void validateTipoCartaoUniqueForUser(Long userId, TipoCartao tipoCartao) {
 
-        boolean USER_ALREADY_HAS_THIS_TYPE =
-                cartaoRepository.existsByUsuarioIdAndTipoCartao(userId, tipoCartao);
+        boolean USER_ALREADY_HAS_THIS_TYPE = cartaoRepository.existsByUsuarioIdAndTipoCartao(userId, tipoCartao);
 
         if (USER_ALREADY_HAS_THIS_TYPE) {
             throw new BusinessException(
@@ -122,5 +150,4 @@ public class CartaoService {
             );
         }
     }
-
 }

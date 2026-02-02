@@ -1,54 +1,84 @@
 <div class="form-user-insert-container mat-elevation-z8">
-    <form action="">
-        <h2>Cadastrar usuÃ¡rio</h2>
+  <form novalidate>
+    <h2>Cadastrar usuário</h2>
 
-        <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Nome</mat-label>
-                <input
-                [(ngModel)]="user.nome"
-                name="nome"
-                [formControl]="nome"
-                required 
-                matInput 
-                placeholder="Placeholder"
-                maxlength="50"
-                >
-                
-                <mat-icon matSuffix>user</mat-icon>
-            </mat-form-field>
-        </p>
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>Nome</mat-label>
+        <input
+          matInput
+          [formControl]="nome"
+          placeholder="Nome do usuário"
+          maxlength="50"
+        />
+        <mat-icon matSuffix>person</mat-icon>
 
-        <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Email</mat-label>
-                <input
-                [(ngModel)]="user.email"
-                name="email"
-                [formControl]="email"
-                required 
-                matInput 
-                placeholder="Placeholder">
-                <mat-icon matSuffix>email</mat-icon>
-            </mat-form-field>
-        </p>
+        <mat-error *ngIf="nome.hasError('required')">
+          Nome é obrigatório
+        </mat-error>
+        <mat-error *ngIf="nome.hasError('minlength')">
+          Nome deve ter no mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+    </p>
 
-        <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Senha</mat-label>
-                <input
-                [(ngModel)]="user.senha"
-                name="senha"
-                [formControl]="senha"
-                required 
-                type="password" 
-                matInput 
-                placeholder="Placeholder">
-                <mat-icon matSuffix>password</mat-icon>
-            </mat-form-field>
-        </p>
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          type="email"
+          [formControl]="email"
+          placeholder="Email do usuário"
+        />
+        <mat-icon matSuffix>email</mat-icon>
 
-        <button (click)="create()" [disabled]="validateFields()" mat-flat-button color="primary">Cadastra</button>
-        <button routerLink="../" mat-stroked-button color="warm">cancelar</button>
-    </form>
+        <mat-error *ngIf="email.hasError('required')">
+          Email é obrigatório
+        </mat-error>
+        <mat-error *ngIf="email.hasError('email')">
+          Email inválido
+        </mat-error>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>Senha</mat-label>
+        <input
+          matInput
+          type="password"
+          [formControl]="senha"
+          placeholder="Senha"
+        />
+        <mat-icon matSuffix>lock</mat-icon>
+
+        <mat-error *ngIf="senha.hasError('required')">
+          Senha é obrigatória
+        </mat-error>
+        <mat-error *ngIf="senha.hasError('minlength')">
+          Senha deve ter no mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+    </p>
+
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      (click)="create()"
+      [disabled]="isInvalid || isSubmitting"
+    >
+      Cadastrar
+    </button>
+
+    <button
+      type="button"
+      routerLink="../"
+      mat-stroked-button
+      color="warn"
+    >
+      Cancelar
+    </button>
+  </form>
 </div>
